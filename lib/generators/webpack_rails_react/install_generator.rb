@@ -75,7 +75,7 @@ module WebpackRailsReact
       if File.exists? application_view
         insert_into_file 'app/views/layouts/application.html.erb', before: /<\/body>/ do
             <<-'RUBY'
-<%= ja  vascript_include_tag *webpack_asset_paths('application') %>
+<%= javascript_include_tag *webpack_asset_paths('application') %>
             RUBY
         end
         insert_into_file 'app/views/layouts/application.html.erb', before: /<\/head>/ do

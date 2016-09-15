@@ -13,10 +13,10 @@ This gem has been tested against Rails 4.2 and Ruby 2.2. Earlier versions of Rai
 ## Using webpack-rails-react
 
 ### Install Flags
-  1. `bundle exec rails generate webpack_rails_react:install` - Basic Webpack and React Boilerplate
-  2. `bundle exec rails generate webpack_rails_react:install --router` - Webpack / React / React Router Boilerplate
-  3. `bundle exec rails generate webpack_rails_react:install --redux` - Webpack / React / Redux Boilerplate
-  4. `bundle exec rails generate webpack_rails_react:install --router --redux` - Webpack / React / Router / Redux Boilerplate 
+  1. No Flags - Basic Webpack and React Boilerplate
+  2. --router - Webpack / React / React Router Boilerplate
+  3. --redux - Webpack / React / Redux Boilerplate
+  4. --router --redux - Webpack / React / Router / Redux Boilerplate 
 
 ### Installation
 

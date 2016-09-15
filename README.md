@@ -12,15 +12,20 @@ This gem has been tested against Rails 4.2 and Ruby 2.2. Earlier versions of Rai
 
 ## Using webpack-rails-react
 
+### Install Flags
+  1. `bundle exec rails generate webpack_rails_react:install` - Basic Webpack and React Boilerplate
+  2. `bundle exec rails generate webpack_rails_react:install --router` - Webpack / React / React Router Boilerplate
+  3. `bundle exec rails generate webpack_rails_react:install --redux` - Webpack / React / Redux Boilerplate
+  4. `bundle exec rails generate webpack_rails_react:install --router --redux` - Webpack / React / Router / Redux Boilerplate 
+
 ### Installation
 
   1. Add `webpack-rails-react` to your gemfile
-  1. Run `bundle install` to install the gem
-  1. Run `bundle exec rails generate webpack_rails_react:install` to copy across example files
-  1. Run `npm run dev_server` to start `webpack-dev-server`
-  1. Add the webpack entry point to your layout (see next section)
-  1. Edit `webpack/application.js` and write some code
-
+  2. Run `bundle install` to install the gem
+  3. Run `bundle exec rails generate webpack_rails_react:install` to copy across example files
+  4. Run `npm run dev_server` to start `webpack-dev-server`
+  5. Add the webpack entry point to your layout (see next section)
+  6. Edit `webpack/application.js` and write some code
 
 ### Adding the entry point to your Rails application
 

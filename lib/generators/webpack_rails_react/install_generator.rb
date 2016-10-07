@@ -120,6 +120,10 @@ module WebpackRailsReact
              This must be the very last route in your routes.rb file
              e.g. get '*unmatched_route', to: 'home#index'
 
+          FOR HEROKU DEPLOYS:
+          1.  npm run heroku-setup
+          2.  Push to heroku the post-build hook will take care of the rest
+
         See the README.md for this gem at
         https://github.com/cottonwoodcoding/webpack-rails-react/blob/master/README.md
         for more info.

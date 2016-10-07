@@ -4,7 +4,10 @@
   "license": "MIT",
   "scripts": {
     "dev_server": "./node_modules/.bin/webpack-dev-server --config config/webpack.config.js",
-    "build": "webpack --config=config/webpack.config.js -p"
+    "build": "webpack --config=config/webpack.config.js -p",
+    "heroku-setup": "heroku buildpacks:clear && heroku buildpacks:set heroku/nodejs && heroku buildpacks:add heroku/ruby --index 2",
+    "webpack:deploy-heroku": "webpack --config=config/webpack.config.heroku.js -p",
+    "heroku-postbuild": "npm run webpack:deploy-heroku"
   },
   "dependencies": {
     "react": "^15.1.0",

@@ -39,6 +39,7 @@ module WebpackRailsReact
 
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
+      copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
     end
 
     def create_webpack_application_js

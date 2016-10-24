@@ -120,7 +120,7 @@ A view generator has been added.
 
 Pull requests & issues welcome. Advice & criticism regarding webpack config approach also welcome.
 
-Please ensure that pull requests pass both rubocop & rspec. New functionality should be discussed in an issue first.
+Please ensure that pull requests pass rspec. New functionality should be discussed in an issue first.
 
 ## Acknowledgements
 

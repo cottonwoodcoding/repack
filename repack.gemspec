@@ -1,12 +1,12 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem's version:
-require "webpack/rails/react/version"
+require "repack/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "repack"
-  s.version     = Webpack::Rails::React::VERSION
+  s.version     = Repack::VERSION
   s.authors     = ["Dave Jungst", "Jake Sorce"]
   s.email       = ["dave@cottonwoodcoding.com", "jake@cottonwoodcoding.com"]
   s.homepage    = "https://github.com/cottonwoodcoding/reapack"

@@ -1,1 +1,1 @@
-require 'webpack/rails'
+require 'repack/rails'

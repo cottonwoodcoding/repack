@@ -1,4 +1,4 @@
-module WebpackRailsReact
+module Repack
   # :nodoc:
   class InstallGenerator < ::Rails::Generators::Base
     source_root File.expand_path("../../../../example", __FILE__)
@@ -43,32 +43,32 @@ module WebpackRailsReact
     end
 
     def create_webpack_application_js
-      empty_directory "webpack"
-      empty_directory "webpack/containers"
-      empty_directory "webpack/components"
+      empty_directory "client"
+      empty_directory "client/containers"
+      empty_directory "client/components"
 
       if options[:router] && options[:redux]
-        copy_file "boilerplate/router_redux/application.js", "webpack/application.js"
-        copy_file "boilerplate/routes.js", "webpack/routes.js"
-        copy_file "boilerplate/router_redux/store.js", "webpack/store.js"
-        copy_file "boilerplate/router_redux/reducers.js", "webpack/reducers/index.js"
-        create_file "webpack/actions.js"
-        copy_file "boilerplate/router/App.js", "webpack/containers/App.js"
-        copy_file "boilerplate/router/NoMatch.js", "webpack/components/NoMatch.js"
+        copy_file "boilerplate/router_redux/application.js", "client/application.js"
+        copy_file "boilerplate/routes.js", "client/routes.js"
+        copy_file "boilerplate/router_redux/store.js", "client/store.js"
+        copy_file "boilerplate/router_redux/reducers.js", "client/reducers/index.js"
+        create_file "client/actions.js"
+        copy_file "boilerplate/router/App.js", "client/containers/App.js"
+        copy_file "boilerplate/router/NoMatch.js", "client/components/NoMatch.js"
       elsif options[:router]
-        copy_file "boilerplate/router/application.js", "webpack/application.js"
-        copy_file "boilerplate/routes.js", "webpack/routes.js"
-        copy_file "boilerplate/router/App.js", "webpack/containers/App.js"
-        copy_file "boilerplate/router/NoMatch.js", "webpack/components/NoMatch.js"
+        copy_file "boilerplate/router/application.js", "client/application.js"
+        copy_file "boilerplate/routes.js", "client/routes.js"
+        copy_file "boilerplate/router/App.js", "client/containers/App.js"
+        copy_file "boilerplate/router/NoMatch.js", "client/components/NoMatch.js"
       elsif options[:redux]
-        copy_file "boilerplate/redux/application.js", "webpack/application.js"
-        copy_file "boilerplate/redux/store.js", "webpack/store.js"
-        copy_file "boilerplate/redux/reducers.js", "webpack/reducers/index.js"
-        create_file "webpack/actions.js"
-        copy_file "boilerplate/App.js", "webpack/containers/App.js"
+        copy_file "boilerplate/redux/application.js", "client/application.js"
+        copy_file "boilerplate/redux/store.js", "client/store.js"
+        copy_file "boilerplate/redux/reducers.js", "client/reducers/index.js"
+        create_file "client/actions.js"
+        copy_file "boilerplate/App.js", "client/containers/App.js"
       else
-        copy_file "boilerplate/application.js", "webpack/application.js"
-        copy_file "boilerplate/App.js", "webpack/containers/App.js"
+        copy_file "boilerplate/application.js", "client/application.js"
+        copy_file "boilerplate/App.js", "client/containers/App.js"
       end
 
       application_view = 'app/views/layouts/application.html.erb'
@@ -94,7 +94,7 @@ module WebpackRailsReact
     def add_to_gitignore
       append_to_file ".gitignore" do
         <<-EOF.strip_heredoc
-        # Added by webpack-rails
+        # Added by repack
         /node_modules
         /public/webpack
         EOF
@@ -108,7 +108,7 @@ module WebpackRailsReact
     def whats_next
       puts <<-EOF.strip_heredoc
 
-        We've set up the basics of webpack-rails-react for you, but you'll still
+        We've set up the basics of repack for you, but you'll still
         need to:
 
           1. Add an element with an id of 'app' to your layout
@@ -125,10 +125,10 @@ module WebpackRailsReact
           2.  Push to heroku the post-build hook will take care of the rest
 
         See the README.md for this gem at
-        https://github.com/cottonwoodcoding/webpack-rails-react/blob/master/README.md
+        https://github.com/cottonwoodcoding/repack/blob/master/README.md
         for more info.
 
-        Thanks for using webpack-rails-react!
+        Thanks for using repack!
 
       EOF
     end

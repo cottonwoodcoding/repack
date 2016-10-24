@@ -14,7 +14,7 @@ var production = process.env.NODE_ENV === 'production';
 var config = {
   entry: {
     // Sources are expected to live in $app_root/webpack
-    'application': './webpack/application.js'
+    'application': './client/application.js'
   },
 
   output: {
@@ -22,14 +22,14 @@ var config = {
     // that all webpacked assets start with webpack/
 
     // must match config.webpack.output_dir
-    path: path.join(__dirname, '..', 'public', 'webpack'),
-    publicPath: '/webpack/',
+    path: path.join(__dirname, '..', 'public', 'client'),
+    publicPath: '/client/',
 
     filename: production ? '[name]-[chunkhash].js' : '[name].js'
   },
 
   resolve: {
-    root: path.join(__dirname, '..', 'webpack'),
+    root: path.join(__dirname, '..', 'client'),
     extensions: ["", ".js", ".jsx", ".es6"]
   },
 
@@ -80,7 +80,7 @@ if (production) {
     port: devServerPort,
     headers: { 'Access-Control-Allow-Origin': '*' }
   };
-  config.output.publicPath = '//localhost:' + devServerPort + '/webpack/';
+  config.output.publicPath = '//localhost:' + devServerPort + '/client/';
   // Source maps
   config.devtool = 'cheap-module-eval-source-map';
 }

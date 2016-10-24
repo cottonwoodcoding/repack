@@ -22,8 +22,8 @@ module Webpack
     config.webpack.dev_server.binary = 'node_modules/.bin/webpack-dev-server'
     config.webpack.dev_server.enabled = !::Rails.env.production?
 
-    config.webpack.output_dir = "public/webpack"
-    config.webpack.public_path = "webpack"
+    config.webpack.output_dir = "public/client"
+    config.webpack.public_path = "client"
     config.webpack.manifest_filename = "manifest.json"
 
     rake_tasks do

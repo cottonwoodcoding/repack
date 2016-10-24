@@ -5,11 +5,11 @@ require "webpack/rails/react/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "webpack-rails-react"
+  s.name        = "repack"
   s.version     = Webpack::Rails::React::VERSION
   s.authors     = ["Dave Jungst", "Jake Sorce"]
   s.email       = ["dave@cottonwoodcoding.com", "jake@cottonwoodcoding.com"]
-  s.homepage    = "https://github.com/cottonwoodcoding/webpack-rails-react"
+  s.homepage    = "https://github.com/cottonwoodcoding/reapack"
   s.summary     = "Webpack / Rails / React"
   s.description = "Production-tested, JavaScript-first tooling to use webpack within your Rails application"
   s.license     = "MIT"

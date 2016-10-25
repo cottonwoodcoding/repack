@@ -2,7 +2,7 @@ module Repack
   # :nodoc:
   class InstallGenerator < ::Rails::Generators::Base
     source_root File.expand_path("../../../../example", __FILE__)
-    desc "Install everything you need for a basic webpack-rails integration"
+    desc "Install everything you need for a basic repack integration"
     class_option :router, type: :boolean, default: false, description: 'Add React Router'
     class_option :redux, type: :boolean, default: false, description: 'Add Redux'
     def copy_package_json
@@ -89,23 +89,29 @@ module Repack
         EOF
       end
     end
-    def run_npm_install
-      run "npm install" if yes?("Would you like us to run 'npm install' for you?")
+
+    def install_yarn
+      run "npm install -g yarn"
     end
+
+    def run_yarn_install
+      run "yarn install" if yes?("Would you like us to run 'yarn install' for you?")
+    end
+
     def whats_next
       puts <<-EOF.strip_heredoc
         We've set up the basics of repack for you, but you'll still
         need to:
           1. Add an element with an id of 'app' to your layout
           2. To disable hot module replacement remove <script src="http://localhost:3808/webpack-dev-server.js"></script> from layout
-          3. Run 'npm run dev_server' to run the webpack-dev-server
+          3. Run 'yarn run dev_server' to run the webpack-dev-server
           4. Run 'bundle exec rails s' to run the rails server (both servers must be running)
           5. If you are using react-router and want to sync server routes add:
              get '*unmatched_route', to: <your client controller>#<default action>
              This must be the very last route in your routes.rb file
              e.g. get '*unmatched_route', to: 'home#index'
           FOR HEROKU DEPLOYS:
-          1.  npm run heroku-setup
+          1.  yarn run heroku-setup
           2.  Push to heroku the post-build hook will take care of the rest
         See the README.md for this gem at
         https://github.com/cottonwoodcoding/repack/blob/master/README.md

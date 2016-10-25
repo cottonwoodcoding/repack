@@ -91,7 +91,7 @@ module Repack
     end
 
     def install_yarn
-      run "npm install -g yarn"
+      run "npm install yarn --save-dev"
     end
 
     def run_yarn_install

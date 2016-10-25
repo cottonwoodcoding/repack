@@ -66,18 +66,18 @@ module Repack
       if File.exists? application_view
         insert_into_file 'app/views/layouts/application.html.erb', before: /<\/body>/ do
             <<-'RUBY'
-<%= javascript_include_tag *webpack_asset_paths('application') %>
+    <%= javascript_include_tag *webpack_asset_paths('application') %>
             RUBY
         end
         insert_into_file 'app/views/layouts/application.html.erb', before: /<\/head>/ do
             <<-'RUBY'
-      <% if Rails.env.development? %>
-        <script src="http://localhost:3808/webpack-dev-server.js"></script>
-      <% end %>
+    <% if Rails.env.development? %>
+      <script src="http://localhost:3808/webpack-dev-server.js"></script>
+    <% end %>
             RUBY
         end
       else
-        puts "\n\n***WARNING*** HAML NOT SUPPORTED IN applictaion.html additional steps required\n\n"
+        puts "\n\n***WARNING*** HAML NOT SUPPORTED YET additional steps required\n\n"
       end
     end
     def add_to_gitignore

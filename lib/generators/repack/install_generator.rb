@@ -76,14 +76,16 @@ module Repack
       application_view = haml_installed ? "#{layouts_dir}/application.html.haml" : "#{layouts_dir}/application.html.erb"
 
       if haml_installed
-        # convert views to haml
-        begin
-          require 'html2haml'
-        rescue LoadError
-          `gem install html2haml`
+        puts 'Convert all existing ERB views into HAML? (yes / no)'
+        if gets.strip.downcase =~ /y(es)?/
+          begin
+            require 'html2haml'
+          rescue LoadError
+            `gem install html2haml`
+          end
+          `find . -name \*.erb -print | sed 'p;s/.erb$/.haml/' | xargs -n2 html2haml`
+          `rm #{layouts_dir}/application.html.erb`
         end
-        `find . -name \*.erb -print | sed 'p;s/.erb$/.haml/' | xargs -n2 html2haml`
-        `rm #{layouts_dir}/application.html.erb`
 
         insert_into_file application_view, before: /%body/ do
           <<-'RUBY'

@@ -116,7 +116,6 @@ module Repack
     def add_to_gitignore
       append_to_file ".gitignore" do
         <<-EOF.strip_heredoc
-        # Added by webpack-rails
         /node_modules
         /public/webpack
         EOF

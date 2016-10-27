@@ -35,7 +35,7 @@ module Repack
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
       puts 'Are you going to be deploying to heroku? (yes \ no)'
-      if gets.strip.downcase == 'yes'
+      if gets.strip.downcase =~ /y(es)?/
         puts 'copying heroku webpack config!'
         copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
       end
@@ -124,7 +124,7 @@ module Repack
 
     def install_yarn
       puts 'Do you want to install and use yarn as your package manager? (yes / no)'
-      if gets.strip.downcase == 'yes'
+      if gets.strip.downcase =~ /y(es)?/
         @yarn_installed = true
         run "npm install yarn --save-dev"
       end

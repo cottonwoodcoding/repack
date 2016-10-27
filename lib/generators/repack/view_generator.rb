@@ -3,7 +3,7 @@ module Repack
   class ViewGenerator < ::Rails::Generators::Base
     source_root File.expand_path("../../../../example", __FILE__)
 
-    desc "Generate a view with webpack entry / rails view / and webpack container"
+    desc "Generate a view with webpack entry / rails view / and react container"
 
     def normalize_view_name
       raise "View name argument missing" if args.length == 0
@@ -12,7 +12,7 @@ module Repack
 
     def update_webpack_entry
       name = @view.downcase.gsub(/ /, "_")
-      path = "'#{name}': './webpack/#{name}.js',"
+      path = "'#{name}': './client/#{name}.js',"
       insert_into_file 'config/webpack.config.js', after: /entry: {\n/ do
         <<-CONFIG
     #{path}
@@ -21,7 +21,7 @@ module Repack
     end
 
     def create_entry_file
-      file = "webpack/#{@view.gsub(/ /, '')}.js"
+      file = "client/#{@view.gsub(/ /, '')}.js"
       name = @view.titleize.gsub(/ /, '')
       copy_file "boilerplate/views/ViewTemplate.js", file
       gsub_file file, /Placeholder/, name
@@ -29,7 +29,7 @@ module Repack
 
     def create_container
       name = @view.titleize.gsub(/ /, '')
-      file = "webpack/containers/#{name}.js"
+      file = "client/containers/#{name}.js"
       copy_file "boilerplate/views/ContainerTemplate.js", file
       gsub_file file, /Placeholder/, name
     end

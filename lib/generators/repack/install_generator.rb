@@ -1,6 +1,7 @@
 module Repack
   # :nodoc:
   class InstallGenerator < ::Rails::Generators::Base
+    @yarn_installed = false
     source_root File.expand_path("../../../../example", __FILE__)
     desc "Install everything you need for a basic repack integration"
     class_option :router, type: :boolean, default: false, description: 'Add React Router'
@@ -66,28 +67,56 @@ module Repack
         copy_file "boilerplate/application.js", "client/application.js"
         copy_file "boilerplate/App.js", "client/containers/App.js"
       end
-      application_view = 'app/views/layouts/application.html.erb'
-      if File.exists? application_view
-        insert_into_file 'app/views/layouts/application.html.erb', before: /<\/body>/ do
-            <<-'RUBY'
-    <%= javascript_include_tag *webpack_asset_paths('application') %>
-            RUBY
+
+      haml_installed = Gem.loaded_specs.has_key? 'haml-rails'
+      layouts_dir = 'app/views/layouts'
+           haml_installed = Gem.loaded_specs.has_key? 'haml-rails'
+      layouts_dir = 'app/views/layouts'
+
+      application_view = haml_installed ? "#{layouts_dir}/application.html.haml" : "#{layouts_dir}/application.html.erb"
+
+      if haml_installed
+        # convert views to haml
+        begin
+          require 'html2haml'
+        rescue LoadError
+          `gem install html2haml`
         end
-        insert_into_file 'app/views/layouts/application.html.erb', before: /<\/head>/ do
+        `find . -name \*.erb -print | sed 'p;s/.erb$/.haml/' | xargs -n2 html2haml`
+        `rm #{layouts_dir}/application.html.erb`
+
+        insert_into_file application_view, before: /%body/ do
+          <<-'RUBY'
+    - if Rails.env.development?
+      %script{:src => "http://localhost:3808/webpack-dev-server.js"}
+          RUBY
+        end
+
+        insert_into_file application_view, after: /= yield/ do
             <<-'RUBY'
-    <% if Rails.env.development? %>
-      <script src="http://localhost:3808/webpack-dev-server.js"></script>
-    <% end %>
+
+    = javascript_include_tag *webpack_asset_paths('application')
             RUBY
         end
       else
-        puts "\n\n***WARNING*** HAML NOT SUPPORTED YET additional steps required\n\n"
+        insert_into_file application_view, before: /<\/head>/ do
+          <<-'RUBY'
+<% if Rails.env.development? %>
+  <script src="http://localhost:3808/webpack-dev-server.js"></script>
+<% end %>
+          RUBY
+        end
+        insert_into_file application_view, before: /<\/body>/ do
+          <<-'RUBY'
+<%= javascript_include_tag *webpack_asset_paths('application') %>
+          RUBY
+        end
       end
     end
     def add_to_gitignore
       append_to_file ".gitignore" do
         <<-EOF.strip_heredoc
-        # Added by repack
+        # Added by webpack-rails
         /node_modules
         /public/webpack
         EOF
@@ -95,11 +124,19 @@ module Repack
     end
 
     def install_yarn
-      run "npm install yarn --save-dev"
+      puts 'Do you want to install and use yarn as your package manager? (yes / no)'
+      if gets.strip.downcase == 'yes'
+        @yarn_installed = true
+        run "npm install yarn --save-dev"
+      end
     end
 
-    def run_yarn_install
-      run "yarn install" if yes?("Would you like us to run 'yarn install' for you?")
+    def run_package_manager_install
+      if @yarn_installed
+        run "yarn install" if yes?("Would you like us to run 'yarn install' for you?")
+      else
+        run "npm install" if yes?("Would you like us to run 'npm install' for you?")
+      end
     end
 
     def whats_next

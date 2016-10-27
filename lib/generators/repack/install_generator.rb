@@ -33,7 +33,11 @@ module Repack
     end
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
-      copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
+      puts 'Are you going to be deploying to heroku? (yes \ no)'
+      if gets.strip.downcase == 'yes'
+        puts 'copying heroku webpack config!'
+        copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
+      end
     end
     def create_webpack_application_js
       empty_directory "client"

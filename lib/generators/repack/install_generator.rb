@@ -34,8 +34,7 @@ module Repack
     end
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
-      puts 'Are you going to be deploying to heroku? (yes \ no)'
-      if gets.strip.downcase =~ /y(es)?/
+      if yes?('Are you going to be deploying to heroku? (yes \ no)')
         puts 'copying heroku webpack config!'
         copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
       end
@@ -76,8 +75,7 @@ module Repack
       application_view = haml_installed ? "#{layouts_dir}/application.html.haml" : "#{layouts_dir}/application.html.erb"
 
       if haml_installed
-        puts 'Convert all existing ERB views into HAML? (yes / no)'
-        if gets.strip.downcase =~ /y(es)?/
+        if yes?('Convert all existing ERB views into HAML? (yes / no)')
           begin
             require 'html2haml'
           rescue LoadError
@@ -125,8 +123,7 @@ module Repack
     end
 
     def install_yarn
-      puts 'Do you want to install and use yarn as your package manager? (yes / no)'
-      if gets.strip.downcase =~ /y(es)?/
+      if yes?('Do you want to install and use yarn as your package manager? (yes / no)')
         @yarn_installed = true
         run "npm install yarn --save-dev"
       end

@@ -117,7 +117,7 @@ module Repack
       append_to_file ".gitignore" do
         <<-EOF.strip_heredoc
         /node_modules
-        /public/client
+        /public/webpack
         npm-debug.log
         EOF
       end

@@ -91,7 +91,7 @@ Next you will need to set up a post build hook to bundle Webpack. Include the be
 
 Lastly, ensure that all Babel related modules are listed as dependencies and not dev dependencies in `package.json`. At this point, you should be able to push to Heroku.
 
-An alternative to adding the post build hook to `package.json` is to add `rake webpack:compile` to your deployment. It serves a similar purpose as Sprockets' `assets:precompile` task. If you're using Webpack and Sprockets (as we are at Marketplacer) you'll need to run both tasks - but it doesn't matter which order they're run in.
+An alternative to adding the post build hook to `package.json` is to add `rake repack:compile` to your deployment. It serves a similar purpose as Sprockets' `assets:precompile` task. If you're using Webpack and Sprockets (as we are at Marketplacer) you'll need to run both tasks - but it doesn't matter which order they're run in.
 
 If you're using `[chunkhash]` in your build asset filenames (which you should be, if you want to cache them in production), you'll need to persist built assets between deployments. Consider in-flight requests at the time of deployment: they'll receive paths based on the old `manifest.json`, not the new one.
 

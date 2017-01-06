@@ -41,7 +41,7 @@ var config = {
         loader: "babel",
         query:
         {
-          presets:['es2015', 'react', 'stage-0']
+          presets:['latest', 'react', 'stage-0']
         }
       },
       {
@@ -86,7 +86,7 @@ if (production) {
   };
   config.output.publicPath = '//localhost:' + devServerPort + '/client/';
   // Source maps
-  config.devtool = 'cheap-module-eval-source-map';
+  config.devtool = 'eval-source-map';
 }
 
 module.exports = config;

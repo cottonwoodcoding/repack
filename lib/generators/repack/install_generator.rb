@@ -32,6 +32,7 @@ module Repack
          end
       end
     end
+
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
       if yes?('Are you going to be deploying to heroku? (yes \ no)')
@@ -39,10 +40,16 @@ module Repack
         copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
       end
     end
+
     def create_webpack_application_js
       empty_directory "client"
       empty_directory "client/containers"
       empty_directory "client/components"
+      empty_directory "client/__tests__"
+      empty_directory "client/__tests__/__mocks__"
+      copy_file ".babelrc", ".babelrc"
+      copy_file "styleMock", "client/__tests__/__mocks__"
+      copy_file "fileMock", "client/__tests__/__mocks__"
       if options[:router] && options[:redux]
         copy_file "boilerplate/router_redux/application.js", "client/application.js"
         copy_file "boilerplate/routes.js", "client/routes.js"

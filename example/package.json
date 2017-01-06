@@ -2,12 +2,21 @@
   "name": "repack",
   "version": "0.0.1",
   "license": "MIT",
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/client/__tests__/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/client/__tests__/__mocks__/styleMock.js"
+    },
+    "testRegex": "test.js$"
+  },
   "scripts": {
     "dev_server": "./node_modules/.bin/webpack-dev-server --config config/webpack.config.js",
     "build": "webpack --config=config/webpack.config.js -p",
     "heroku-setup": "heroku buildpacks:clear && heroku buildpacks:set heroku/nodejs && heroku buildpacks:add heroku/ruby --index 2",
     "webpack:deploy-heroku": "webpack --config=config/webpack.config.heroku.js -p",
-    "heroku-postbuild": "npm run webpack:deploy-heroku"
+    "heroku-postbuild": "npm run webpack:deploy-heroku",
+    "test": "jest",
+    "test_watch": "jest --watch"
   },
   "dependencies": {
     "react": "^15.1.0",
@@ -16,13 +25,25 @@
     "webpack": "^1.9.11",
     "babel-core": "^6.9.1",
     "babel-loader": "^6.2.4",
-    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-latest": "^6.16.0",
     "image-webpack-loader": "3.0.0",
+    "file-loader": "^0.9.0",
+    "url-loader": "^0.5.7",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "webpack-dev-middleware": "1.7.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^1.9.0"
+    "babel-jest": "^18.0.0",
+    "enzyme": "^2.7.0",
+    "jest": "^18.1.0",
+    "react-addons-test-utils": "^15.4.1",
+    "react-shallow-renderer": "^1.1.4",
+    "react-test-renderer": "^15.4.1",
+    "react-test-utils": "^0.0.1",
+    "redux-mock-store": "^1.2.1",
+    "sinon": "^1.17.7",
+    "webpack-dashboard": "^0.2.0",
+    "webpack-dev-server": "^1.9.0",
   }
 }

@@ -23,13 +23,13 @@ This gem has been tested against Rails 4.2 and Ruby 2.2. Earlier versions of Rai
   1. Add `repack` to your gemfile
   2. Run `bundle install` to install the gem
   3. Run `bundle exec rails generate repack:install` to copy across example files
-  4. Run `npm run dev_server` to start `webpack-dev-server`
+  4. Run `npm run dev_server` (or `yarn run dev_server`) to start `webpack-dev-server`
   5. Add the webpack entry point to your layout (see next section)
   6. Edit `client/application.js` and write some code
 
 ### Adding the entry point to your Rails application
 
-To add your webpacked javascript in to your app, add the following to the `<body>` section of any layout by default it has been added to `layout.html.erb`:
+To add your webpacked javascript in to your app, add the following to the `<body>` section of any layout by default it has been added to `application.html.erb`:
 
 ```erb
 <%= javascript_include_tag *webpack_asset_paths("application") %>
@@ -39,13 +39,13 @@ Take note of the splat (`*`): `webpack_asset_paths` returns an array, as one ent
 
 #### Use with webpack-dev-server live reload
 
-If you're using the webpack dev server's live reload feature (not the React hot reloader), you'll also need to include the following in your layout template:
+If you're using the webpack dev server's live reload feature (not the React hot reloader), you'll also need the following in your layouts/application template:
 
 ``` html
 <script src="http://localhost:3808/webpack-dev-server.js"></script>
 ```
 
-This has been added to layouts/index.html.erb by default.
+**This has been added to layouts/application.html.erb by default.**
 
 ### Configuration Defaults
 

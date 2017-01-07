@@ -44,6 +44,6 @@
     "redux-mock-store": "^1.2.1",
     "sinon": "^1.17.7",
     "webpack-dashboard": "^0.2.0",
-    "webpack-dev-server": "^1.9.0",
+    "webpack-dev-server": "^1.9.0"
   }
 }

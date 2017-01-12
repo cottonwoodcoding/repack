@@ -86,7 +86,7 @@ if (production) {
   };
   config.output.publicPath = '//localhost:' + devServerPort + '/client/';
   // Source maps
-  config.devtool = 'eval-source-map';
+  config.devtool = 'source-map';
 }
 
 module.exports = config;

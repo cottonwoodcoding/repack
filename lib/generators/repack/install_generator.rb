@@ -47,7 +47,7 @@ module Repack
       empty_directory "client/components"
       empty_directory "client/__tests__"
       empty_directory "client/__tests__/__mocks__"
-      copy_file ".babelrc", "./.babelrc"
+      copy_file "babelrc", "./.babelrc"
       copy_file "styleMock.js", "client/__tests__/__mocks__/styleMock.js"
       copy_file "fileMock.js", "client/__tests__/__mocks__/fileMock.js"
       if options[:router] && options[:redux]

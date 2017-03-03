@@ -31,7 +31,6 @@ var config = {
   },
 
   resolve: {
-    root: path.join(__dirname, '..', 'client'),
     extensions: [".js", ".jsx", ".es6", "css", "scss"]
   },
 

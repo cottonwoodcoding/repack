@@ -6,16 +6,26 @@ module Repack
     desc "Install everything you need for a basic repack integration"
     class_option :router, type: :boolean, default: false, description: 'Add React Router'
     class_option :redux, type: :boolean, default: false, description: 'Add Redux'
+    class_option :god, type: :boolean, default: false, description: 'Router, Redux, Devise, Auth, GOD'
+
+    def check_god_mode
+      if options[:god]
+        unless yes?('Is this is new application?')
+          raise 'GOD MODE is for new apps only. Run again at your own risk!'
+        end
+      end
+    end
+
     def copy_package_json
       copy_file "package.json", "package.json"
-      if options[:router]
+      if options[:router] || options[:god]
         insert_into_file './package.json', after: /dependencies\": {\n/ do
           <<-'RUBY'
     "react-router": "^2.4.1",
           RUBY
         end
       end
-      if options[:redux]
+      if options[:redux] || options[:god]
         insert_into_file './package.json', after: /dependencies\": {\n/ do
           <<-'RUBY'
     "react-redux": "^4.4.5",
@@ -24,10 +34,11 @@ module Repack
           RUBY
         end
       end
-      if options[:router] && options[:redux]
+      if options[:router] && options[:redux] || options[:god]
           insert_into_file './package.json', after: /dependencies\": {\n/ do
           <<-'RUBY'
     "react-router-redux": "^4.0.5",
+    "redux-auth-wrapper": "^1.0.0",
           RUBY
          end
       end
@@ -70,8 +81,10 @@ module Repack
         create_file "client/actions.js"
         copy_file "boilerplate/App.js", "client/containers/App.js"
       else
-        copy_file "boilerplate/application.js", "client/application.js"
-        copy_file "boilerplate/App.js", "client/containers/App.js"
+        unless options[:god]
+          copy_file "boilerplate/application.js", "client/application.js"
+          copy_file "boilerplate/App.js", "client/containers/App.js"
+        end
       end
 
       haml_installed = Gem.loaded_specs.has_key? 'haml-rails'
@@ -106,17 +119,15 @@ module Repack
             RUBY
         end
       else
-        insert_into_file application_view, before: /<\/head>/ do
-          <<-'RUBY'
-<% if Rails.env.development? %>
-  <script src="http://localhost:3808/webpack-dev-server.js"></script>
-<% end %>
-          RUBY
+        insert_into_file application_view, before: /<\/head>/ do <<-'RUBY'
+  <% if Rails.env.development? %>
+    <script src="http://localhost:3808/webpack-dev-server.js"></script>
+  <% end %>
+        RUBY
         end
-        insert_into_file application_view, before: /<\/body>/ do
-          <<-'RUBY'
-<%= javascript_include_tag *webpack_asset_paths('application') %>
-          RUBY
+        insert_into_file application_view, before: /<\/body>/ do <<-'RUBY'
+    <%= javascript_include_tag *webpack_asset_paths('application') %>
+        RUBY
         end
       end
     end
@@ -131,9 +142,9 @@ module Repack
     end
 
     def install_yarn
-      if yes?('Do you want to install and use yarn as your package manager? (yes / no)')
+      if yes?('Do you want to global install and use yarn as your package manager? (yes / no)')
         @yarn_installed = true
-        run "npm install yarn --save-dev"
+        run "npm install yarn -g"
       end
     end
 
@@ -143,6 +154,58 @@ module Repack
       else
         run "npm install" if yes?("Would you like us to run 'npm install' for you?")
       end
+    end
+
+    def finishing_god_move
+      if options[:god]
+        copy_file "boilerplate/router_redux/application.js", "client/application.js"
+        copy_file "boilerplate/god_mode/routes.js", "client/routes.js"
+        copy_file "boilerplate/router_redux/store.js", "client/store.js"
+        copy_file "boilerplate/router/NoMatch.js", "client/components/NoMatch.js"
+        copy_file "boilerplate/god_mode/actions/auth.js", "client/actions/auth.js"
+        copy_file "boilerplate/god_mode/actions/flash.js", "client/actions/flash.js"
+        copy_file "boilerplate/god_mode/components/Navbar.js", "client/components/Navbar.js"
+        copy_file "boilerplate/god_mode/components/FlashMessage.js", "client/components/FlashMessage.js"
+        copy_file "boilerplate/god_mode/components/Login.js", "client/components/Login.js"
+        copy_file "boilerplate/god_mode/components/SignUp.js", "client/components/SignUp.js"
+        copy_file "boilerplate/god_mode/components/Loading.js", "client/components/Loading.js"
+        copy_file "boilerplate/god_mode/containers/App.js", "client/containers/App.js"
+        copy_file "boilerplate/god_mode/reducers/auth.js", "client/reducers/auth.js"
+        copy_file "boilerplate/god_mode/reducers/flash.js", "client/reducers/flash.js"
+        copy_file "boilerplate/god_mode/reducers/index.js", "client/reducers/index.js"
+        copy_file "boilerplate/god_mode/controllers/api/users_controller.rb", "app/controllers/api/users_controller.rb"
+        copy_file "boilerplate/god_mode/scss/alert.css.scss", "app/assets/stylesheets/alert.css.scss"
+        gem "devise"
+        Bundler.with_clean_env do
+          run "bundle install"
+        end
+        run 'bin/spring stop'
+        generate "devise:install"
+        run "bundle exec rake db:create"
+        model_name = ask("What would you like the user model to be called? [user]")
+        model_name = "user" if model_name.blank?
+        generate "devise", model_name
+        generate "devise:controllers #{model_name.pluralize}"
+
+        insert_into_file 'config/routes.rb', after: /devise_for :users/ do <<-'RUBY'
+, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
+  namespace :api do
+    get 'logged_in_user', to: 'users#logged_in_user'
+  end
+        RUBY
+        end
+        ['./app/controllers/users/sessions_controller.rb', './app/controllers/users/registrations_controller.rb'].each do |c|
+          insert_into_file c, after: /Devise::\W*.*\n/ do <<-'RUBY'
+skip_before_action :verify_authenticity_token
+respond_to :json
+            RUBY
+          end
+        end
+      end
+      run 'bundle exec rake db:migrate'
     end
 
     def whats_next

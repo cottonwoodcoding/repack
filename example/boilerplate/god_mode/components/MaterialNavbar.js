@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { handleLogout } from '../actions/auth';
 import { connect } from 'react-redux';
 
-class Navbar extends React.Component {
+class MaterialNavbar extends React.Component {
   logout = (e) => {
     e.preventDefault();
     this.props.dispatch(handleLogout());
@@ -42,4 +42,4 @@ const mapStateToProps = (state) => {
   return { auth: state.auth }
 }
 
-export default connect(mapStateToProps)(Navbar);
+export default connect(mapStateToProps)(MaterialNavbar);

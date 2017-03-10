@@ -47,8 +47,10 @@ module Repack
     def copy_webpack_conf
       copy_file "webpack.config.js", "config/webpack.config.js"
       if yes?('Are you going to be deploying to heroku? (yes \ no)')
-        puts 'copying heroku webpack config!'
+        puts 'Copying Heroku Webpack Config!'
         copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
+        puts 'Adding Basic Puma Proc File'
+        copy_file "Procfile", 'Procfile'
       end
     end
 
@@ -131,6 +133,7 @@ module Repack
         end
       end
     end
+    
     def add_to_gitignore
       append_to_file ".gitignore" do
         <<-EOF.strip_heredoc
@@ -141,35 +144,37 @@ module Repack
       end
     end
 
-    def install_yarn
-      if yes?('Do you want to global install and use yarn as your package manager? (yes / no)')
-        @yarn_installed = true
-        run "npm install yarn -g"
-      end
-    end
-
-    def run_package_manager_install
-      if @yarn_installed
-        run "yarn install" if yes?("Would you like us to run 'yarn install' for you?")
-      else
-        run "npm install" if yes?("Would you like us to run 'npm install' for you?")
-      end
-    end
-
     def finishing_god_move
       if options[:god]
+        nav_template = ask('Frontend Framework: 1) Materialize, 2) Bootstrap, 3) None').to_i
+        case nav_template
+          when 1
+            copy_file "boilerplate/god_mode/components/MaterialNavbar.js", "client/components/Navbar.js"
+          when 2
+            copy_file "boilerplate/god_mode/components/BootstrapNavbar.js", "client/components/Navbar.js"
+          when 3
+            puts 'No Navbar template, all the components are ready for you to implement however you want.'
+          else
+            puts 'Wrong template choice, try again!'
+            finishing_god_move
+        end
+
+        if nav_template == 3
+          copy_file "boilerplate/god_mode/containers/NoNavApp.js", "client/containers/App.js"
+        else
+          copy_file "boilerplate/god_mode/containers/App.js", "client/containers/App.js"
+        end
+        
         copy_file "boilerplate/router_redux/application.js", "client/application.js"
         copy_file "boilerplate/god_mode/routes.js", "client/routes.js"
         copy_file "boilerplate/router_redux/store.js", "client/store.js"
         copy_file "boilerplate/router/NoMatch.js", "client/components/NoMatch.js"
         copy_file "boilerplate/god_mode/actions/auth.js", "client/actions/auth.js"
         copy_file "boilerplate/god_mode/actions/flash.js", "client/actions/flash.js"
-        copy_file "boilerplate/god_mode/components/Navbar.js", "client/components/Navbar.js"
         copy_file "boilerplate/god_mode/components/FlashMessage.js", "client/components/FlashMessage.js"
         copy_file "boilerplate/god_mode/components/Login.js", "client/components/Login.js"
         copy_file "boilerplate/god_mode/components/SignUp.js", "client/components/SignUp.js"
         copy_file "boilerplate/god_mode/components/Loading.js", "client/components/Loading.js"
-        copy_file "boilerplate/god_mode/containers/App.js", "client/containers/App.js"
         copy_file "boilerplate/god_mode/reducers/auth.js", "client/reducers/auth.js"
         copy_file "boilerplate/god_mode/reducers/flash.js", "client/reducers/flash.js"
         copy_file "boilerplate/god_mode/reducers/index.js", "client/reducers/index.js"
@@ -209,24 +214,39 @@ respond_to :json
     end
 
     def whats_next
+      if options[:god]
+        puts <<-EOF.strip_heredoc
+           ██████╗  ██████╗ ██████╗     ███╗   ███╗ ██████╗ ██████╗ ███████╗    ███████╗███╗   ██╗ █████╗ ██████╗ ██╗     ███████╗██████╗ 
+          ██╔════╝ ██╔═══██╗██╔══██╗    ████╗ ████║██╔═══██╗██╔══██╗██╔════╝    ██╔════╝████╗  ██║██╔══██╗██╔══██╗██║     ██╔════╝██╔══██╗
+          ██║  ███╗██║   ██║██║  ██║    ██╔████╔██║██║   ██║██║  ██║█████╗      █████╗  ██╔██╗ ██║███████║██████╔╝██║     █████╗  ██║  ██║
+          ██║   ██║██║   ██║██║  ██║    ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝      ██╔══╝  ██║╚██╗██║██╔══██║██╔══██╗██║     ██╔══╝  ██║  ██║
+          ╚██████╔╝╚██████╔╝██████╔╝    ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗    ███████╗██║ ╚████║██║  ██║██████╔╝███████╗███████╗██████╔╝
+          ╚═════╝  ╚═════╝ ╚═════╝     ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝    ╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚═════╝                                      
+
+          Note: If you chose a frontend framework (Materialize / Bootstrap) you still need to install the gem and configure it in your project.
+
+        EOF
+      end
       puts <<-EOF.strip_heredoc
         We've set up the basics of repack for you, but you'll still
         need to:
-          1. Add an element with an id of 'app' to your layout
-          2. To disable hot module replacement remove <script src="http://localhost:3808/webpack-dev-server.js"></script> from layout
-          3. Run 'yarn run dev_server' to run the webpack-dev-server
-          4. Run 'bundle exec rails s' to run the rails server (both servers must be running)
-          5. If you are using react-router and want to sync server routes add:
-             get '*unmatched_route', to: <your client controller>#<default action>
-             This must be the very last route in your routes.rb file
-             e.g. get '*unmatched_route', to: 'home#index'
+          1. yarn install or npm install
+          2. Add an element with an id of 'app' to your layout
+          3. To disable hot module replacement remove <script src="http://localhost:3808/webpack-dev-server.js"></script> from layout
+          4. Run 'yarn / npm dev_server' to run the webpack-dev-server
+          5. Run 'bundle exec rails s' to run the rails server (both servers must be running)
+          6. If you are using react-router or god mode and want to sync server routes add:
+            get '*unmatched_route', to: <your client controller>#<default action>
+            This must be the very last route in your routes.rb file
+            e.g. get '*unmatched_route', to: 'home#index'
           FOR HEROKU DEPLOYS:
-          1.  yarn run heroku-setup
+          1.  yarn / npm heroku-setup
           2.  Push to heroku the post-build hook will take care of the rest
         See the README.md for this gem at
         https://github.com/cottonwoodcoding/repack/blob/master/README.md
         for more info.
-        Thanks for using repack!
+          
+        Thanks for using Repack!
       EOF
     end
   end

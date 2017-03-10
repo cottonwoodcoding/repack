@@ -31,7 +31,7 @@ var config = {
   },
 
   resolve: {
-    extensions: ["", ".js", ".jsx", ".es6"]
+    extensions: [".js", ".jsx", ".es6"]
   },
 
   module: {

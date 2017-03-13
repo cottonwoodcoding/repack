@@ -146,20 +146,20 @@ module Repack
 
     def finishing_god_move
       if options[:god]
-        nav_template = ask('Frontend Framework: 1) Materialize, 2) Bootstrap, 3) None').to_i
+        nav_template = ask('Frontend Framework: 1) Materialize, 2) Bootstrap, 3) None').strip
         case nav_template
-          when 1
+          when '1'
             copy_file "boilerplate/god_mode/components/MaterialNavbar.js", "client/components/Navbar.js"
-          when 2
+          when '2'
             copy_file "boilerplate/god_mode/components/BootstrapNavbar.js", "client/components/Navbar.js"
-          when 3
+          when '3'
             puts 'No Navbar template, all the components are ready for you to implement however you want.'
           else
             puts 'Wrong template choice, try again!'
             finishing_god_move
         end
 
-        if nav_template == 3
+        if nav_template == '3'
           copy_file "boilerplate/god_mode/containers/NoNavApp.js", "client/containers/App.js"
         else
           copy_file "boilerplate/god_mode/containers/App.js", "client/containers/App.js"
@@ -180,10 +180,12 @@ module Repack
         copy_file "boilerplate/god_mode/reducers/index.js", "client/reducers/index.js"
         copy_file "boilerplate/god_mode/controllers/api/users_controller.rb", "app/controllers/api/users_controller.rb"
         copy_file "boilerplate/god_mode/scss/alert.css.scss", "app/assets/stylesheets/alert.css.scss"
+
         gem "devise"
         Bundler.with_clean_env do
           run "bundle install"
         end
+        
         run 'bin/spring stop'
         generate "devise:install"
         run "bundle exec rake db:create"

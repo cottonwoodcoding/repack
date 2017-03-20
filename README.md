@@ -17,6 +17,7 @@ This gem has been tested against Rails 4.2 and Ruby 2.2. Earlier versions of Rai
   2. --router -> Webpack / React / React Router Boilerplate
   3. --redux -> Webpack / React / Redux Boilerplate
   4. --router --redux -> Webpack / React / Router / Redux Boilerplate
+  5. --god -> Webpack / React / Router / Redux / Devise / Auth
 
 ### Installation
 

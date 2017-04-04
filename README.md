@@ -57,6 +57,32 @@ If you're using the webpack dev server's live reload feature (not the React hot 
   * Webpacked assets will be compiled to `public/client`
   * The manifest file is named `manifest.json`
 
+## View Generator
+1. Generate a controller
+2. Add at least an index route for the controller
+3. rails g repack:view name_of_view (should match controller name)
+
+EXAMPLE:
+``` bash
+rails g controller Admin index
+rails g repack:view admin
+```
+
+NOTE: The view generator will try to match its argument to a currently existing controller name, but if a controller cannot be found with that name, the generator will follow typical Rails convention and pluralize the view directory being created.
+
+In an example where I have an AdminController &  SessionsController:
+
+``` bash
+rails g repack:view admin
+(will find the AdminController and create views/admin/index.html.erb)
+
+rails g repack:view sessions
+(will find the SessionsController and create views/sessions/index.html.erb)
+
+rails g repack:view user
+(will not find a controller, will follow Rails controller naming convention and create views/users/index.html.erb)
+```
+
 ### Working with browser tests
 
 In development, we make sure that the `webpack-dev-server` is running when browser tests are running.
@@ -108,13 +134,6 @@ If you're using `[chunkhash]` in your build asset filenames (which you should be
 * Integration tests
 * Port example apps to Repack
 
-
-## Experimental
-A view generator has been added.
-
-  1.Generate a controller
-  2.Add at least an index route for the controller
-  3.rails g repack:view name_of_view (should be singular and match controller)
 
 
 ## Contributing

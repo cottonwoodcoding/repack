@@ -1,3 +1,3 @@
 module Repack
-  VERSION = "2.4.6"
+  VERSION = "3.0.0"
 end

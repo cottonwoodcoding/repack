@@ -1,58 +1,12 @@
 module Repack
   # :nodoc:
   class InstallGenerator < ::Rails::Generators::Base
+    include GeneratorUtils
     @yarn_installed = false
     source_root File.expand_path("../../../../example", __FILE__)
-    desc "Install everything you need for a basic repack integration"
-    class_option :router, type: :boolean, default: false, description: 'Add React Router'
-    class_option :redux, type: :boolean, default: false, description: 'Add Redux'
-    class_option :god, type: :boolean, default: false, description: 'Router, Redux, Devise, Auth, GOD'
+    desc "Install everything you need for a basic Repack integration"
 
-    def check_god_mode
-      if options[:god]
-        unless yes?('Is this is new application?')
-          raise 'GOD MODE is for new apps only. Run again at your own risk!'
-        end
-      end
-    end
-
-    def copy_package_json
-      copy_file "package.json", "package.json"
-      if options[:router] || options[:god]
-        insert_into_file './package.json', after: /dependencies\": {\n/ do
-          <<-'RUBY'
-    "react-router": "^2.4.1",
-          RUBY
-        end
-      end
-      if options[:redux] || options[:god]
-        insert_into_file './package.json', after: /dependencies\": {\n/ do
-          <<-'RUBY'
-    "react-redux": "^4.4.5",
-    "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0",
-          RUBY
-        end
-      end
-      if options[:router] && options[:redux] || options[:god]
-          insert_into_file './package.json', after: /dependencies\": {\n/ do
-          <<-'RUBY'
-    "react-router-redux": "^4.0.5",
-    "redux-auth-wrapper": "^1.0.0",
-          RUBY
-         end
-      end
-    end
-
-    def copy_webpack_conf
-      copy_file "webpack.config.js", "config/webpack.config.js"
-      if yes?('Are you going to be deploying to heroku? (yes \ no)')
-        puts 'Copying Heroku Webpack Config!'
-        copy_file "webpack.config.heroku.js", "config/webpack.config.heroku.js"
-        puts 'Adding Basic Puma Proc File'
-        copy_file "Procfile", 'Procfile'
-      end
-    end
+    copy_webpack_conf
 
     def create_webpack_application_js
       empty_directory "client"
@@ -122,9 +76,9 @@ module Repack
         end
       else
         insert_into_file application_view, before: /<\/head>/ do <<-'RUBY'
-  <% if Rails.env.development? %>
-    <script src="http://localhost:3808/webpack-dev-server.js"></script>
-  <% end %>
+    <% if Rails.env.development? %>
+      <script src="http://localhost:3808/webpack-dev-server.js"></script>
+    <% end %>
         RUBY
         end
         insert_into_file application_view, before: /<\/body>/ do <<-'RUBY'
@@ -144,13 +98,48 @@ module Repack
       end
     end
 
+    def self.frontend_config(frontend_gem, sheet_imports, sheet_name = 'application.css', new_sheet_name = 'application.scss')
+      begin
+        gem frontend_gem
+        File.rename "app/assets/stylesheets/#{sheet_name}", "app/assets/stylesheets/#{new_sheet_name}"
+        File.open("app/assets/stylesheets/#{new_sheet_name}", 'w+') do |f|
+          sheet_imports.each do |import|
+            f.write("@import #{import}; \n")
+          end
+        end
+      rescue => e
+        puts "Error While Setting Up Frontend Framework: #{e}"
+      end
+    end
+
     def finishing_god_move
       if options[:god]
+        base_sheet_path = "app/assets/stylesheets"
         nav_template = ask('Frontend Framework: 1) Materialize, 2) Bootstrap, 3) None').strip
         case nav_template
           when '1'
+            sheet_imports = [ 'materialize', 'alert' ]
+            gem 'materialize-sass'
+            if File.exists? "#{base_sheet_path}/application.css"
+              File.rename "#{base_sheet_path}/application.css", "#{base_sheet_path}/application.scss"
+            end
+            File.open("#{base_sheet_path}/application.scss", 'w+') do |f|
+              sheet_imports.each do |import|
+                f.write("@import '#{import}'; \n")
+              end
+            end
             copy_file "boilerplate/god_mode/components/MaterialNavbar.js", "client/components/Navbar.js"
           when '2'
+            sheet_imports = [ 'bootstrap-sprockets', 'bootstrap', 'alert' ]
+            gem 'bootstrap-sass'
+            if File.exists? "#{base_sheet_path}/application.css"
+              File.rename "#{base_sheet_path}/application.css", "#{base_sheet_path}/application.scss"
+            end
+            File.open("#{base_sheet_path}/application.scss", 'w+') do |f|
+              sheet_imports.each do |import|
+                f.write("@import '#{import}'; \n")
+              end
+            end
             copy_file "boilerplate/god_mode/components/BootstrapNavbar.js", "client/components/Navbar.js"
           when '3'
             puts 'No Navbar template, all the components are ready for you to implement however you want.'
@@ -164,7 +153,7 @@ module Repack
         else
           copy_file "boilerplate/god_mode/containers/App.js", "client/containers/App.js"
         end
-        
+
         copy_file "boilerplate/router_redux/application.js", "client/application.js"
         copy_file "boilerplate/god_mode/routes.js", "client/routes.js"
         copy_file "boilerplate/router_redux/store.js", "client/store.js"
@@ -182,33 +171,49 @@ module Repack
         copy_file "boilerplate/god_mode/scss/alert.css.scss", "app/assets/stylesheets/alert.css.scss"
 
         gem "devise"
+        
+        token_auth = ask('Use Devise Token Auth - https://github.com/lynndylanhurley/devise_token_auth? (yes \ no)').strip
+        if token_auth == 'yes'
+          gem 'omniauth'
+          gem 'devise_token_auth'
+        end
+
         Bundler.with_clean_env do
-          run "bundle install"
+          run "bundle update"
         end
         
         run 'bin/spring stop'
         generate "devise:install"
         run "bundle exec rake db:create"
-        model_name = ask("What would you like the user model to be called? [user]")
+        model_name = ask("What would you like the devise model to be called? [user]")
         model_name = "user" if model_name.blank?
-        generate "devise", model_name
-        generate "devise:controllers #{model_name.pluralize}"
 
-        insert_into_file 'config/routes.rb', after: /devise_for :users/ do <<-'RUBY'
-, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
-  }
-  namespace :api do
-    get 'logged_in_user', to: 'users#logged_in_user'
-  end
-        RUBY
+        if token_auth == 'yes'
+          mount_point = ask("Auth Mount Point [api/auth]")
+          mount_point = "api/auth" if mount_point.blank?
+          generate "devise_token_auth:install #{model_name.titleize} #{mount_point}"
+        else
+          generate "devise", model_name
+          generate "devise:controllers #{model_name.pluralize}"
         end
-        ['./app/controllers/users/sessions_controller.rb', './app/controllers/users/registrations_controller.rb'].each do |c|
-          insert_into_file c, after: /Devise::\W*.*\n/ do <<-'RUBY'
-skip_before_action :verify_authenticity_token
-respond_to :json
-            RUBY
+        
+        if token_auth == 'no'
+          insert_into_file 'config/routes.rb', after: /devise_for :users/ do <<-'RUBY'
+  , controllers: {
+      sessions: 'users/sessions',
+      registrations: 'users/registrations'
+    }
+    namespace :api do
+      get 'logged_in_user', to: 'users#logged_in_user'
+    end
+          RUBY
+          end
+          ['./app/controllers/users/sessions_controller.rb', './app/controllers/users/registrations_controller.rb'].each do |c|
+            insert_into_file c, after: /Devise::\W*.*\n/ do <<-'RUBY'
+  skip_before_action :verify_authenticity_token
+  respond_to :json
+              RUBY
+            end
           end
         end
       end

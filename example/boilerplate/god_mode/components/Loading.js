@@ -1,11 +1,8 @@
 import React from 'react';
 
 class Loading extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { isLoading: false };
-    let destructTimeout;
-  }
+    state = { isLoading: false };
+    destructTimeout;
 
   componentDidMount() {
     this.setState({ isLoading: true });
@@ -22,18 +19,17 @@ class Loading extends React.Component {
   }
 
   render() {
-    if(this.state.isLoading) {
-      this.selfDestruct();
-    } else {
-      clearTimeout(this.destructTimeout);
-    }
+    let { info } = this.props;
+    info = info === undefined ? '' : info
 
+    if(this.state.isLoading)
+      this.selfDestruct();
     return (
       <div>
         { this.state.isLoading ?
-          <span className="loading">{`Loading ${this.props.info}`}</span>
+          <span className="loading">{`Loading ${info}`}</span>
           :
-          <span>{`No ${this.props.info} found`}</span>
+          <span>{`No ${info} found`}</span>
         }
       </div>
     )
